@@ -26,5 +26,3 @@ function sortResults(rightSide, leftSide) {
   //concatenates the remaining values
   return fullArray.concat(leftSide).concat(rightSide);
 }
-
-module.export = mergeSort;

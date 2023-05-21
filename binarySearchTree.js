@@ -1,5 +1,3 @@
-import mergeSort from './mergeSort.js'; //my own mergeSort algorithm
-
 class Node {
   constructor(value) {
     this.value = value;
@@ -82,24 +80,135 @@ class BinarySearchTree {
     if (!node) {
       return false;
     } else if (!node.left && !node.right && node.value === this.root.value) {
-      this.root = null;
-      return this;
+      //deletes root node
+      return null;
     } else if (!node.left && !node.right) {
+      //deletes leaf node
       return null;
     } else if (!node.left) {
+      //deletes node with one right child
       parentNode.right = node.right;
       return this;
     } else if (!node.right) {
+      //delete node with one left child
       parentNode.left = node.left;
       return this;
     } else {
-      let tempNode = node.right;
-      while (tempNode.left) {
-        tempNode = tempNode.left;
+      //deletes node with two children
+      let temp = node.right;
+      while (temp.left) {
+        temp = temp.left;
       }
-      this.delete(tempNode.value);
-      node.value = tempNode.value;
+      this.delete(temp.value);
+      node.value = temp.value;
       return this;
     }
+  }
+  levelOrderBFS() {
+    //breadth-first level order traversal and logs the correct order to console
+
+    let queue = [];
+    let visitedValues = [];
+    queue.push(this.root);
+    while (queue.length > 0) {
+      let currentNode = queue.shift();
+      visitedValues.push(currentNode.value);
+      if (currentNode.left) {
+        queue.push(currentNode.left);
+      } else if (currentNode.right) {
+        queue.push(currentNode.right);
+      }
+    }
+    console.log(visitedValues);
+  }
+
+  //Pre-order = root, left, right
+  //In-order = left, root, right
+  //Post-order = left, right, root
+
+  //Note that the root is moving on the above formulas, so in my code, what is changing is the array.push
+
+  preOrderDFS(currentNode = this.root, visitedValues = []) {
+    //depth-first pre-order traversal and logs array
+    if (currentNode) {
+      visitedValues.push(currentNode.value);
+      this.preOrderDFS(currentNode.left, visitedValues);
+      this.preOrderDFS(currentNode.right, visitedValues);
+    }
+    console.log(visitedValues);
+  }
+
+  inOrderDFS(currentNode = this.root, visitedValues = []) {
+    //depth-first in-order traversal and logs array
+    if (currentNode) {
+      this.inOrderDFS(currentNode.left, visitedValues);
+      visitedValues.push(currentNode.value);
+      this.inOrderDFS(currentNode.right, visitedValues);
+    }
+    console.log(visitedValues);
+  }
+
+  postOrderDFS(currentNode = this.root, visitedValues = []) {
+    //depth-first post-order traversal and logs array
+    if (currentNode) {
+      this.postOrderDFS(currentNode.left, visitedValues);
+      this.postOrderDFS(currentNode.right, visitedValues);
+      visitedValues.push(currentNode.value);
+    }
+    console.log(visitedValues);
+  }
+
+  nodeHeight(value) {
+    let targetNode = this.find(value)[0];
+    if (!targetNode) {
+      return -1; //node doesn't exist
+    }
+    let leftHeight = 0;
+    let rightHeight = 0;
+    let currentNode = targetNode;
+    while (currentNode.left) {
+      leftHeight++;
+      currentNode = currentNode.left; //keeps going left and calculates height
+    }
+    currentNode = targetNode;
+    while (currentNode.right) {
+      rightHeight++;
+      currentNode = currentNode.right; //keeps going right and calculates height
+    }
+    if (leftHeight > rightHeight) {
+      //returns the greater height
+      return leftHeight;
+    }
+    return rightHeight;
+  }
+
+  nodeDepth(value) {
+    let targetNode = this.find(value)[0];
+    if (!targetNode) {
+      return -1; //node doesn't exist
+    }
+    let depth = 0;
+    let currentNode = targetNode;
+    while (currentNode !== this.root) {
+      depth++;
+      currentNode = this.find(currentNode.value)[1];
+    }
+    return depth;
+  }
+
+  isBalanced() {
+    let leftHeight = this.nodeHeight(this.root.left.value);
+    let rightHeight = this.nodeHeight(this.root.right.value);
+    if (Math.abs(leftHeight - rightHeight) <= 1) {
+      return true;
+    }
+    return false;
+  }
+
+  rebalance() {
+    let sortedArray = this.sortAndRemoveDuplicates(this.levelOrderBFS());
+    let newTree = new BinarySearchTree();
+    newTree.root = this.buildTree(sortedArray);
+    return newTree;
   }
 }
