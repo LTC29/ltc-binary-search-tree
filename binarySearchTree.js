@@ -7,8 +7,12 @@ class Node {
 }
 
 class BinarySearchTree {
-  constructor(array) {
-    this.root = null;
+  constructor(array = []) {
+    if (array.length === 0) {
+      this.root = null;
+    } else {
+      this.root = this.buildTree(this.sortAndRemoveDuplicates(array));
+    }
   }
 
   sortAndRemoveDuplicates(array) {
@@ -21,6 +25,18 @@ class BinarySearchTree {
         noDuplicates.push(sortedArray[i]);
       }
     }
+    return noDuplicates;
+  }
+
+  buildTree(noDuplicates) {
+    if (noDuplicates.length === 0) {
+      return null;
+    }
+    let half = Math.floor(noDuplicates.length / 2);
+    let root = new Node(noDuplicates[half]);
+    root.left = this.buildTree(noDuplicates.slice(0, half));
+    root.right = this.buildTree(noDuplicates.slice(half + 1));
+    return root;
   }
 
   find(value) {
@@ -119,7 +135,7 @@ class BinarySearchTree {
         queue.push(currentNode.right);
       }
     }
-    console.log(visitedValues);
+    return visitedValues;
   }
 
   //Pre-order = root, left, right
@@ -132,30 +148,30 @@ class BinarySearchTree {
     //depth-first pre-order traversal and logs array
     if (currentNode) {
       visitedValues.push(currentNode.value);
-      this.preOrderDFS(currentNode.left, visitedValues);
-      this.preOrderDFS(currentNode.right, visitedValues);
+      visitedValues = this.preOrderDFS(currentNode.left, visitedValues);
+      visitedValues = this.preOrderDFS(currentNode.right, visitedValues);
     }
-    console.log(visitedValues);
+    return visitedValues;
   }
 
   inOrderDFS(currentNode = this.root, visitedValues = []) {
     //depth-first in-order traversal and logs array
     if (currentNode) {
-      this.inOrderDFS(currentNode.left, visitedValues);
+      visitedValues = this.inOrderDFS(currentNode.left, visitedValues);
       visitedValues.push(currentNode.value);
-      this.inOrderDFS(currentNode.right, visitedValues);
+      visitedValues = this.inOrderDFS(currentNode.right, visitedValues);
     }
-    console.log(visitedValues);
+    return visitedValues;
   }
 
   postOrderDFS(currentNode = this.root, visitedValues = []) {
     //depth-first post-order traversal and logs array
     if (currentNode) {
-      this.postOrderDFS(currentNode.left, visitedValues);
-      this.postOrderDFS(currentNode.right, visitedValues);
+      visitedValues = this.postOrderDFS(currentNode.left, visitedValues);
+      visitedValues = this.postOrderDFS(currentNode.right, visitedValues);
       visitedValues.push(currentNode.value);
     }
-    console.log(visitedValues);
+    return visitedValues;
   }
 
   nodeHeight(value) {
@@ -207,8 +223,19 @@ class BinarySearchTree {
 
   rebalance() {
     let sortedArray = this.sortAndRemoveDuplicates(this.levelOrderBFS());
-    let newTree = new BinarySearchTree();
-    newTree.root = this.buildTree(sortedArray);
-    return newTree;
+    this.root = this.buildTree(sortedArray);
   }
 }
+
+const prettyPrint = (node, prefix = '', isLeft = true) => {
+  if (node === null) {
+    return;
+  }
+  if (node.right !== null) {
+    prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
+  }
+  console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.value}`);
+  if (node.left !== null) {
+    prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
+  }
+};

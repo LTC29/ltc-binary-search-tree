@@ -12,7 +12,6 @@ function mergeSort(n) {
     return sortResults(leftSide, rightSide);
   }
 }
-
 function sortResults(rightSide, leftSide) {
   let fullArray = [];
   while (leftSide.length > 0 && rightSide.length > 0) {
