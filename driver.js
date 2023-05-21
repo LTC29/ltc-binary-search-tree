@@ -40,3 +40,5 @@ console.log('Level Order (After Rebalance):', levelOrderAfterRebalance);
 console.log('Pre-order (After Rebalance):', preOrderAfterRebalance);
 console.log('In-order (After Rebalance):', inOrderAfterRebalance);
 console.log('Post-order (After Rebalance):', postOrderAfterRebalance);
+
+console.log('Checking if it is balanced one last time:', tree.isBalanced());

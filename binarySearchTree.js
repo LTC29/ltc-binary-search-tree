@@ -131,7 +131,8 @@ class BinarySearchTree {
       visitedValues.push(currentNode.value);
       if (currentNode.left) {
         queue.push(currentNode.left);
-      } else if (currentNode.right) {
+      }
+      if (currentNode.right) {
         queue.push(currentNode.right);
       }
     }
